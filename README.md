@@ -2,6 +2,8 @@
 
 A hands-on Angular 19 demo that implements the **same task manager feature four times** — once with each major state management approach — so you can compare them side-by-side.
 
+![App Screenshot](state-mgt-demo/public/state_mgt_landing.png)
+
 ---
 
 ## Why Do We Need State Management?
