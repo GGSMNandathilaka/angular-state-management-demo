@@ -2,7 +2,7 @@
 
 A hands-on Angular 19 demo that implements the **same task manager feature four times** — once with each major state management approach — so you can compare them side-by-side.
 
-![App Screenshot](state-mgt-demo/public/state_mgt_landing.png)
+![App Screenshot](./state-mgt-demo/public/state_mgt_landing.png)
 
 ---
 
@@ -20,12 +20,12 @@ As Angular applications grow, **state** — the data your UI depends on — beco
 
 **No.** Choosing the right level of state management is just as important as choosing the right tool.
 
-| Application Type | Recommended Approach | Why |
-|---|---|---|
-| **Small apps / prototypes** | Component-local state or simple services | Minimal overhead; easy to understand |
-| **Medium apps** with shared state across a few features | **BehaviorSubject services** or **Angular Signals** | Lightweight, no extra dependencies, enough structure to stay organized |
-| **Large enterprise apps** with many teams, complex async flows, and strict auditability needs | **NgRx Store** (full Redux) | Enforced unidirectional data flow, action logging, time-travel debugging, clear separation of concerns |
-| **Medium-to-large apps** that want store-like structure without Redux boilerplate | **NgRx SignalStore** | Modern, tree-shakable, signal-native, far less code than classic NgRx |
+| Application Type                                                                              | Recommended Approach                                | Why                                                                                                    |
+| --------------------------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Small apps / prototypes**                                                                   | Component-local state or simple services            | Minimal overhead; easy to understand                                                                   |
+| **Medium apps** with shared state across a few features                                       | **BehaviorSubject services** or **Angular Signals** | Lightweight, no extra dependencies, enough structure to stay organized                                 |
+| **Large enterprise apps** with many teams, complex async flows, and strict auditability needs | **NgRx Store** (full Redux)                         | Enforced unidirectional data flow, action logging, time-travel debugging, clear separation of concerns |
+| **Medium-to-large apps** that want store-like structure without Redux boilerplate             | **NgRx SignalStore**                                | Modern, tree-shakable, signal-native, far less code than classic NgRx                                  |
 
 > **Rule of thumb**: Start simple. If your state logic becomes hard to follow or you find yourself wiring up complex inter-component communication, _then_ adopt a more structured solution. Don't reach for NgRx Store in a 3-page CRUD app.
 
@@ -47,6 +47,7 @@ Zone.js required    Zone.js optional           Zoneless apps supported
 ```
 
 **Why the shift?**
+
 - Signals provide **fine-grained reactivity** without Zone.js overhead
 - SignalStore is **fully tree-shakable** — you only ship the features you use
 - SignalStore collapses the action/reducer/effect/selector ceremony into a single declarative store definition
@@ -96,6 +97,7 @@ Flow:  Component ──dispatch──▶ Action ──▶ Reducer ──▶ Stor
 ```
 
 **Files required for one feature:**
+
 ```
 task.actions.ts    →  Define action types + payloads
 task.feature.ts    →  Reducer + initial state (createFeature)
@@ -145,6 +147,7 @@ Flow:  Component ──method call──▶ patchState() ──▶ Signals updat
 ```
 
 **Files required for one feature:**
+
 ```
 task-signal.store.ts  →  Everything in one file
 ```
@@ -153,21 +156,21 @@ task-signal.store.ts  →  Everything in one file
 
 ## NgRx Store vs SignalStore: Full Comparison
 
-| Aspect | NgRx Store | NgRx SignalStore |
-|---|---|---|
-| **Pattern** | Redux (action → reducer → store → selector) | Reactive store (state + computed + methods) |
-| **Boilerplate** | High — actions, reducer, effects, selectors in separate files | Low — single `signalStore()` definition |
-| **Files per feature** | 4-5 files | 1 file |
-| **Reactivity model** | RxJS Observables + `async` pipe | Angular Signals (synchronous reads) |
-| **Side effects** | `createEffect` in a separate class | `rxMethod` inline within store |
-| **Derived state** | `createSelector` (memoized) | `withComputed` + `computed()` |
-| **State mutations** | Dispatch action → reducer handles it | Call method → `patchState()` directly |
-| **DevTools** | Full Redux DevTools support (time-travel, action log) | Limited DevTools support (improving) |
-| **Tree-shaking** | Partial — store infrastructure always included | Full — only ship the features you use |
-| **Bundle size** | Larger (`@ngrx/store` + `@ngrx/effects`) | Smaller (`@ngrx/signals` only) |
-| **Learning curve** | Steep — many concepts to learn | Gentle — feels like writing a service |
-| **Best for** | Large teams, complex async, audit trails | Most new Angular projects |
-| **Zone.js dependency** | Works with Zone.js change detection | Designed for zoneless Angular |
+| Aspect                 | NgRx Store                                                    | NgRx SignalStore                            |
+| ---------------------- | ------------------------------------------------------------- | ------------------------------------------- |
+| **Pattern**            | Redux (action → reducer → store → selector)                   | Reactive store (state + computed + methods) |
+| **Boilerplate**        | High — actions, reducer, effects, selectors in separate files | Low — single `signalStore()` definition     |
+| **Files per feature**  | 4-5 files                                                     | 1 file                                      |
+| **Reactivity model**   | RxJS Observables + `async` pipe                               | Angular Signals (synchronous reads)         |
+| **Side effects**       | `createEffect` in a separate class                            | `rxMethod` inline within store              |
+| **Derived state**      | `createSelector` (memoized)                                   | `withComputed` + `computed()`               |
+| **State mutations**    | Dispatch action → reducer handles it                          | Call method → `patchState()` directly       |
+| **DevTools**           | Full Redux DevTools support (time-travel, action log)         | Limited DevTools support (improving)        |
+| **Tree-shaking**       | Partial — store infrastructure always included                | Full — only ship the features you use       |
+| **Bundle size**        | Larger (`@ngrx/store` + `@ngrx/effects`)                      | Smaller (`@ngrx/signals` only)              |
+| **Learning curve**     | Steep — many concepts to learn                                | Gentle — feels like writing a service       |
+| **Best for**           | Large teams, complex async, audit trails                      | Most new Angular projects                   |
+| **Zone.js dependency** | Works with Zone.js change detection                           | Designed for zoneless Angular               |
 
 ---
 
@@ -177,11 +180,11 @@ task-signal.store.ts  →  Everything in one file
 
 ### How Each Approach Fares
 
-| Approach | Tree-Shakable? | Details |
-|---|---|---|
-| **BehaviorSubject** | N/A | No library overhead — just RxJS operators you already use |
-| **Pure Signals** | N/A | Built into `@angular/core` — zero additional bundle cost |
-| **NgRx Store** | Partial | `@ngrx/store` core (~12 KB min+gz) is always included once you register a store. `@ngrx/effects` adds more. Even if you only use one feature, the store infrastructure ships. |
+| Approach             | Tree-Shakable?      | Details                                                                                                                                                                                            |
+| -------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **BehaviorSubject**  | N/A                 | No library overhead — just RxJS operators you already use                                                                                                                                          |
+| **Pure Signals**     | N/A                 | Built into `@angular/core` — zero additional bundle cost                                                                                                                                           |
+| **NgRx Store**       | Partial             | `@ngrx/store` core (~12 KB min+gz) is always included once you register a store. `@ngrx/effects` adds more. Even if you only use one feature, the store infrastructure ships.                      |
 | **NgRx SignalStore** | Fully tree-shakable | Each `with*` function (`withState`, `withComputed`, `withMethods`) is independently tree-shakable. If you don't use `rxMethod`, it doesn't ship. If you don't use `withComputed`, it doesn't ship. |
 
 ### What Makes SignalStore Tree-Shakable?
@@ -219,12 +222,12 @@ The only thing that changes between tabs is **how state is managed**.
 
 ## The Four Approaches
 
-| Route | Approach | Key Concepts |
-|---|---|---|
-| `/behaviorsubject` | **BehaviorSubject Service** | `BehaviorSubject`, `combineLatest`, `async` pipe — the classic RxJS pattern |
-| `/pure-signals` | **Pure Angular Signals** | `signal()`, `computed()`, `update()` — zero extra packages |
-| `/ngrx-store` | **NgRx Store** | `createFeature`, `createReducer`, `createEffect`, `createActionGroup`, selectors — full Redux pattern |
-| `/signal-store` | **NgRx SignalStore** | `signalStore`, `withState`, `withComputed`, `withMethods`, `rxMethod` — reactive store without boilerplate |
+| Route              | Approach                    | Key Concepts                                                                                               |
+| ------------------ | --------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `/behaviorsubject` | **BehaviorSubject Service** | `BehaviorSubject`, `combineLatest`, `async` pipe — the classic RxJS pattern                                |
+| `/pure-signals`    | **Pure Angular Signals**    | `signal()`, `computed()`, `update()` — zero extra packages                                                 |
+| `/ngrx-store`      | **NgRx Store**              | `createFeature`, `createReducer`, `createEffect`, `createActionGroup`, selectors — full Redux pattern      |
+| `/signal-store`    | **NgRx SignalStore**        | `signalStore`, `withState`, `withComputed`, `withMethods`, `rxMethod` — reactive store without boilerplate |
 
 ## Project Structure
 
@@ -263,18 +266,21 @@ state-mgt-demo/
 ## How Each Approach Works
 
 ### BehaviorSubject Service
+
 - Uses `BehaviorSubject` for each piece of state (`tasks`, `filter`, `loading`)
 - Derives filtered tasks with `combineLatest` + `map`
 - Mutates state via `.next()` and `.getValue()`
 - Components subscribe with the `async` pipe
 
 ### Pure Angular Signals
+
 - Uses `signal()` for each piece of state
 - Derives filtered tasks with `computed()`
 - Mutates state via `.set()` and `.update()`
 - No extra dependencies — built into Angular 19
 
 ### NgRx Store (Redux Pattern)
+
 - Actions defined with `createActionGroup`
 - Reducer built with `createFeature` + `createReducer` + `on()`
 - Async loading handled by `createEffect` in a separate `TaskEffects` class
@@ -282,6 +288,7 @@ state-mgt-demo/
 - Components dispatch actions and select state from the global store
 
 ### NgRx SignalStore
+
 - Single `signalStore()` call replaces actions, reducer, effects, and selectors
 - `withState` defines initial state
 - `withComputed` replaces selectors
